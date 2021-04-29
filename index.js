@@ -24,6 +24,7 @@ app.get('/', (req, res) =>{
   res.sendDate({message: "test"})  
 })
 
-const port =  3001
+const port = process.env.PORT || 8080
+
 
 app.listen(port, ()=> console.log(`app is running on port ${port}`));
