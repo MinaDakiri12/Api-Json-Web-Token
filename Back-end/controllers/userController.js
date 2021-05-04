@@ -1,68 +1,88 @@
-const User = require('../models/userModel');
+require('dotenv').config();
+const express = require('express');
+const User= require('../models/userModel');
+const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-
- 
-async function hashPassword(password) {
- return await bcrypt.hash(password, 10);
-}
- 
-async function validatePassword(plainPassword, hashedPassword) {
- return await bcrypt.compare(plainPassword, hashedPassword);
-}
- 
-exports.signup = async (req, res, next) => {
- try {
-  const { email, password, role } = req.body
-  const hashedPassword = await hashPassword(password);
-  const newUser = new User({ email, password: hashedPassword, role: role || "user" });
-  const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-   expiresIn: "1d"
-  });
-  newUser.accessToken = accessToken;
-  await newUser.save();
-  res.json({
-   data: newUser,
-   accessToken
-  })
- } catch (error) {
-  next(error)
- }
-}
-
-exports.login = async (req, res, next) => {
-    try {
-     const { email, password } = req.body;
-     const user = await User.findOne({ email });
-     if (!user) return next(new Error('Email does not exist'));
-     const validPassword = await validatePassword(password, user.password);
-     if (!validPassword) return next(new Error('Password is not correct'))
-     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-     });
-     await User(user._id, { accessToken })
-     res.status(200).json({
-      data: { email: user.email, role: user.role },
-      accessToken
-     })
-    } catch (error) {
-     next(error);
-    }
-}
 
 
+exports.register= async(req,res)=>{
     
-exports.getUser = async (req, res, next) => {
-    try {
-     const userId = req.params.userId;
-     const user = await User.findById(userId);
-     if (!user) return next(new Error('User does not exist'));
-      res.status(200).json({
-      data: user
-     });
-    } catch (error) {
-     next(error)
-    }
+const {name,email,password,role}=req.body;
+const hashh= await bcrypt.hash(password, 10);
+const  user = new User({
+ name,email,password:hashh,role:role});
+
+
+ user.save((err,user)=>{
+if(err){
+    return res.status(400).send(err)
 }
+res.send({user})
+
+});
+}
+
+exports.login=(req,res)=>{
+    const {email, password } = req.body;
+    User.findOne({email}, async(err, user) => {
+        
+        if(err || !user) {
+            return res.status(400).json({
+                error: 'User not found with this email, Please SignUp!'})
+        }
+        const isMatch =await bcrypt.compare(password, user.password)
+        if(!isMatch) return res.status(400).json({msg: "Incorrect password."})
+        if (user.enabled === false)
+        return res.status(200).json({ enabled: false, id: user._id });
+
+        const token = jwt.sign({user_id: user._id,role: user.role,}, process.env.JWT_SECRET);
+
+        res.cookie('token', token, {expiresIn:"1d"})
+
+        const { _id, nom, email,role } = user;
+
+        return res.json({
+            token, user: {_id, nom, email,role}
+           
+        })
+
+    })
+}
+exports.signout = (req, res) => {
+
+    res.clearCookie('token');
+
+    res.json({
+        message: "User Signout"
+    })
+
+}  
+
+exports.updatePassword = async (req, res) => {
     
+    const user = await User.findOne({ _id: req.params.id });
+    if (!user) return res.status(400).json('Id non Valid');
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    user.password = hashedPassword;
+    user.enabled = true;
+    console.log(user);
+    const saveUser = await user.save();
+    if (saveUser) {
+      const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
+      return res
+        .status(200)
+        .cookie('token', token, {
+        expire: new Date() + 8062000,
+          httpOnly: true,
+        })
+        .json({ isAuth: true, role: user.role });
+    }
+};
+
 
