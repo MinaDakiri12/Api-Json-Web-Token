@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 const express = require ('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -13,6 +14,7 @@ const app = express()
 
 ///Midllewares
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended : true}));
 app.use( cors({
   origin: 'http://localhost:3001',
