@@ -1,16 +1,27 @@
 require('dotenv').config();
 const express = require ('express');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const User = require('./models/userModel')
 const routes = require('./routes/route.js');
  
 
-
+//config
 const app = express()
 
+
+
+///Midllewares
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
+app.use( cors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+})
+);
+
+//Routes
+app.use('/api', routes);
 
 const port = process.env.PORT || 8080
 
@@ -32,38 +43,4 @@ mongoose.connect(process.env.DATABASE,{
 .catch(()=> console.log('not connected to the database!'))
 
 
- 
-app.use(async (req, res, next) => {
- if (req.headers["x-access-token"]) {
-  const accessToken = req.headers["x-access-token"];
-  const { userId, exp } = await jwt.verify(accessToken, process.env.JWT_SECRET);
-  // Check if token has expired
-  if (exp < Date.now().valueOf() / 1000) { 
-   return res.status(401).json({ error: "JWT token has expired, please login to obtain a new one" });
-  } 
-  res.locals.loggedInUser = await User.findById(userId); next(); 
- } else { 
-  next(); 
- } 
-});
 
-app.use('/api', routes);
-
-//mid
-
-app.use(async (req, res, next) => {
-  if (req.headers["x-access-token"]) {
-   const accessToken = req.headers["x-access-token"];
-   const { userId, exp } = await jwt.verify(accessToken, process.env.JWT_SECRET);
-   // Check if token has expired
-   if (exp < Date.now().valueOf() / 1000) {
-    return res.status(401).json({
-     error: "JWT token has expired, please login to obtain a new one"
-    });
-   }
-   res.locals.loggedInUser = await User.findById(userId);
-   next();
-  } else {
-   next();
-  }
-});
