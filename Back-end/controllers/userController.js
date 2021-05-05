@@ -24,11 +24,9 @@ res.send({user})
 
 exports.login=(req,res)=>{
     const {email, password } = req.body;
-    console.log(req.body);
     User.findOne({email}, async(err, user) => {
         console.log(user);
         if(err || !user) {
-            console.log('ana hna');
             return res.status(400).json({
                 error: 'User not found with this email, Please SignUp!'})
         }
@@ -40,13 +38,12 @@ exports.login=(req,res)=>{
         const token = jwt.sign({user_id: user._id,role: user.role,}, process.env.JWT_SECRET);
 
         res.cookie('token', token, {expiresIn:"1d"})
-
-        const { _id, nom, email,role } = user;
-
-        return res.json({
-            token, user: {_id, nom, email,role}
-           
-        })
+        
+        return res.status(200).cookie('token', token, {
+            maxAge: 600000000,
+            httpOnly: true,
+          })
+          .json({ isAuth: true, role: user.role });
 
     })
 }
