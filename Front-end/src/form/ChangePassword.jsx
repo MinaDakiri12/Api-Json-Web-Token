@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios' 
+import Layout from './../core/Layout'
 import { useParams } from 'react-router-dom'
 
 function ChangePassword(props) {
@@ -23,22 +24,33 @@ function ChangePassword(props) {
         if(res.data.isAuth && res.data.role === 'Tech') props.history.push('/tech')
       }
     } catch (error) {
-      error && setError(error.response);
+      if(error) console.log(error.response);
     }
 
   }
-  return (
-    <div>
-      <h1>ChangePassword</h1>
-       {
-         error && <p>{error}</p>
-       }
+  const changePassword = () =>  (
+    
        <form onSubmit={handelSubmit}>
-         <input type="password" name="password" className="form-control" id="" onChange={handelChange}/>
+         <input type="password" name="password" className="form-control"  onChange={handelChange}/>
          <input type="submit" className="form-control" value="changePassword"/>
        </form>
-    </div>
+    
   )
+  return (
+    <div>
+       <Layout title="change Password">
+           <div className="row">
+               <div className="col-md-6 mx-auto">
+
+                 { changePassword() }
+               </div>
+            </div>
+           
+
+       </Layout>
+    </div>
+)
 }
+
 
 export default ChangePassword
