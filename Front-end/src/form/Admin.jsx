@@ -30,11 +30,11 @@ function Admin(){
     <form onSubmit={handelSubmit}>
          <div className="form-group">
              <label htmlFor="name" className="text-muted">Name</label>
-             <input onChange={handelChange}  type="text" className="form-control" id="name"/>
+             <input onChange={handelChange}  type="text" className="form-control" name="name"/>
          </div>
          <div className="form-group">
              <label htmlFor="email" className="text-muted">Email</label>
-             <input onChange={handelChange}  type="text" className="form-control" id="email"/>
+             <input onChange={handelChange}  type="text" className="form-control" name="email"/>
          </div>
          <select class="custom-select" name="role" onChange={handelChange}>
             <option selected disabled value="User">User</option>
@@ -43,7 +43,7 @@ function Admin(){
          </select>
          <div className="form-group">
              <label htmlFor="password" className="text-muted">Password</label>
-             <input onChange={handelChange}  type="password" className="form-control" id="password"/>
+             <input onChange={handelChange}  type="password" className="form-control" name="password"/>
          </div>
          <button className="btn btn-lg btn-block btn-outline-success">Register</button>
       
