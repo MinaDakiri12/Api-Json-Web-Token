@@ -24,9 +24,11 @@ res.send({user})
 
 exports.login=(req,res)=>{
     const {email, password } = req.body;
+    console.log(req.body);
     User.findOne({email}, async(err, user) => {
-        
+        console.log(user);
         if(err || !user) {
+            console.log('ana hna');
             return res.status(400).json({
                 error: 'User not found with this email, Please SignUp!'})
         }
