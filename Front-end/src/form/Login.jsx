@@ -31,8 +31,9 @@ function Login(props) {
         if(res.data.isAuth && res.data.role === 'User') props.history.push('/user')
         if(res.data.isAuth && res.data.role === 'Tech') props.history.push('/tech')
       }
-    } catch (error) {
-     
+    }
+    catch (error) {
+      if(error) console.log(error.response);
     }
 
   }
