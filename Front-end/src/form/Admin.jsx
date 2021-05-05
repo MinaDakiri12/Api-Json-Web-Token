@@ -16,8 +16,9 @@ function Admin(){
     try {
       const res = await axios.post('http://localhost:3001/api/register',dataRegister)
       res && console.log(res.data);
-    } catch (error) {
-      error && console.log(error.response)
+    }
+    catch (error) {
+      if(error) console.log(error.response);
     }
    
   }
