@@ -9,15 +9,19 @@ function Login(props) {
     email: '',
     password:''
   }
+
   const [dataLogin,setDataLogin] = React.useState(initialState)
   const [error,setError] = React.useState('')
+
   const handelChange = (e)=>{
-    const {name,value} = e.target
-    setDataLogin({...dataLogin,[name]:value})
+    setDataLogin({...dataLogin,[e.target.name] : e.target.value})
   }
-  const handelSubmit= async (e)=>{
+
+  const handelSubmit = async (e)=>{
+    
     e.preventDefault();
     try {
+      
       const res = await axios.post('http://localhost:3001/api/login',dataLogin,{
         withCredentials:true
       })
@@ -37,11 +41,11 @@ function Login(props) {
     <form onSubmit={handelSubmit}>
          <div className="form-group">
              <label htmlFor="email" className="text-muted">Email</label>
-             <input onChange={handelChange}  type="text" className="form-control" id="email"/>
+             <input onChange={handelChange}  type="text" className="form-control" name="email"/>
          </div>
          <div className="form-group">
              <label htmlFor="password" className="text-muted">Password</label>
-             <input onChange={handelChange}  type="password" className="form-control" id="password"/>
+             <input onChange={handelChange}  type="password" className="form-control" name="password"/>
          </div>
          <button className="btn btn-lg btn-block btn-outline-info">Login</button>
         </form>
