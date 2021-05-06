@@ -9,7 +9,6 @@ function ChangePassword(props) {
     password:'',
   }
   const [dataLogin,setDataLogin] = React.useState(initialState)
-  const [error,setError] = React.useState('')
   const handelChange = (e)=>{
     const {name,value} = e.target
     setDataLogin({...dataLogin,[name]:value})
