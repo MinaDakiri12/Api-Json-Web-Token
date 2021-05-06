@@ -14,8 +14,8 @@ function Admin(){
   const handelSubmit = async (e)=>{
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3001/api/register',dataRegister)
-      res && console.log(res.data);
+      await axios.post('http://localhost:3001/api/register',dataRegister)
+     
     }
     catch (error) {
       if(error) console.log(error.response);
