@@ -5,14 +5,14 @@ import axios from 'axios'
 axios.defaults.withCredentials = true
 
 function Login(props) {
+
   const initialState = {
     email: '',
     password:''
   }
 
   const [dataLogin,setDataLogin] = React.useState(initialState)
-  const [error,setError] = React.useState('')
-
+  
   const handelChange = (e)=>{
     setDataLogin({...dataLogin,[e.target.name] : e.target.value})
   }
