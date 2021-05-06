@@ -12,7 +12,6 @@ const hashh= await bcrypt.hash(password, 10);
 const  user = new User({
  name,email,password:hashh,role:role});
 
-
  user.save((err,user)=>{
 if(err){
     return res.status(400).send(err)
@@ -25,7 +24,7 @@ res.send({user})
 exports.login=(req,res)=>{
     const {email, password } = req.body;
     User.findOne({email}, async(err, user) => {
-        console.log(user);
+
         if(err || !user) {
             return res.status(400).json({
                 error: 'User not found with this email, Please SignUp!'})
@@ -37,8 +36,6 @@ exports.login=(req,res)=>{
 
         const token = jwt.sign({user_id: user._id,role: user.role,}, process.env.JWT_SECRET);
 
-        res.cookie('token', token, {expiresIn:"1d"})
-        
         return res.status(200).cookie('token', token, {
             maxAge: 600000000,
             httpOnly: true,
@@ -61,7 +58,7 @@ exports.updatePassword = async (req, res) => {
     
     const user = await User.findOne({ _id: req.params.id });
     if (!user) return res.status(400).json('Id non Valid');
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     user.password = hashedPassword;
     user.enabled = true;
     console.log(user);
@@ -77,7 +74,7 @@ exports.updatePassword = async (req, res) => {
       return res
         .status(200)
         .cookie('token', token, {
-        expire: new Date() + 8062000,
+         expire: new Date() + 8062000,
           httpOnly: true,
         })
         .json({ isAuth: true, role: user.role });
